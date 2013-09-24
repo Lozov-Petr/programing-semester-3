@@ -49,8 +49,8 @@ isReflexive' r = isRef (normalize $ foldl (\acc (a,b) -> a:b:acc) [] r) where
   isRef [] = True
   
   -- Задание №09 -- 
-
-closure r = r ++ [(a,d) | (a,b) <- r, (c,d) <- r, b == c, not $ elem (a,d) r]
+  
+closure r = if closing == [] then r else closure (r ++ closing) where closing = normalize [(a,d) | (a,b) <- r, (c,d) <- r, b == c, not $ elem (a,d) r]
 
   -- Задание №10 -- 
   
