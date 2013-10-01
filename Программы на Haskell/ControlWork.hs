@@ -1,7 +1,7 @@
 ﻿  -- Задание №01 --
 
-zipWith' f (x:xs) (y:ys) = (f x y) : (zipWith' f xs ys)
-zipWith' f l1 l2 = []
+zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
+zipWith' _ _ _ = []
 
   -- Задание №02 --
 
@@ -9,49 +9,44 @@ sprod x y  = foldl (+) 0 (zipWith' (*) x y)
 
   -- Задание №03 --
 
-normalize (x:xs) = x : (normalize $ filter (/=x) xs)
-normalize [] = []
+normalize (x:xs) = x : normalize (filter (/=x) xs)
+normalize _ = []
 
   -- Задание №04 --
 
 sort (x:xs) = (sort $ filter (<=x) xs) ++ [x] ++ (sort $ filter (>x) xs)
-sort [] = []
+sort _ = []
 
   -- Задание №05 --
 
-isProgression (x1:xs@(x2:_)) = isProg xs where
-  isProg (y1:ys@(y2:_)) = if y2 - y1 == diff then isProg ys else False where diff = x2 - x1
-  isProg y = True   
-isProgression x = True
+isProgression (x@(_:xs)) =  foldr (\s acc -> s == y && acc) True ys where y:ys = zipWith' (-) xs x
+isProgression _ = True
 
   -- Задание №06 --  
 
-isFunction ((x,_):xs) = (foldl (\acc (s, _) -> acc && (s /= x)) True xs) && isFunction xs
-isFunction [] = True
+isFunction x = length x == length (f x []) where
+  f ((x,_):xs) acc = if elem x acc then f xs acc else f xs (x:acc)
+  f _ acc = acc  
 
   -- Задание №07 --  
 
-isSymmetric ((x,y):xs) 
-  | x == y = isSymmetric xs 
-  | snd res = isSymmetric $ fst res 
-  | True = False 
-    where res = foldr (\s (acc,isSym) -> if s == (y,x) then (acc, True) else (s:acc,isSym)) ([], False) xs
+isSymmetric ((x,y):xs)
+  | x == y = isSymmetric xs
+  | True = elem (y,x) xs && isSymmetric (filter (/= (y,x) ) xs)  
 isSymmetric [] = True
 
   -- Задание №08 -- 
 
-isReflexive r = foldr fun True [1..] where 
-  fun a acc = (elem (s,s) r) && acc where
-    s = ((rem a 2) * 2 - 1) * (div a 2)  
-  
-isReflexive' r = isRef (normalize $ foldl (\acc (a,b) -> a:b:acc) [] r) where
-  isRef (h:hs) = (foldl (\acc (a, b) -> if (h == a) && (a == b) then True else acc) False r) && isRef hs
-  isRef [] = True
-  
+isReflexive r = foldr (\a acc -> elem (a,a) r && acc) True ([0..] ++ [-1,-2..])
+
+--Если список конечен, то отношение не рефлексивно. Если список бесконечен, то функция никогда не завершит своб работу, поэтому:
+isReflexive' r = length r == -1  
+
   -- Задание №09 -- 
   
-closure r = if closing == [] then r else closure (r ++ closing) where closing = normalize [(a,d) | (a,b) <- r, (c,d) <- r, b == c, not $ elem (a,d) r]
+closure r = if closing == [] then r else closure (r ++ closing) where 
+  closing = normalize [(a,d) | (a,b) <- r, (c,d) <- r, b == c, not $ elem (a,d) r]
 
   -- Задание №10 -- 
   
-isTransitive x = x == (closure x)
+isTransitive x = length x == length (closure x)
