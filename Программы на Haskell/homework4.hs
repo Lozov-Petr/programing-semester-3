@@ -12,6 +12,7 @@ find E x = Nothing
 elements (T l u r) = (elements l) ++ [u] ++ (elements r)
 elements E = []
 
+isTree E = True
 isTree tree = a where 
   (a,_,_) = isTree' tree where
     isTree' (T E u E) = (True,u,u)
