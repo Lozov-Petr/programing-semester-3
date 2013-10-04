@@ -9,8 +9,12 @@ find tree@(T l u r) x
   | x == u = Just tree
 find E x = Nothing
 
-elements (T l u r) = (elements l) ++ [u] ++ (elements r)
-elements E = []
+elements x = el x [] where
+  el (T l u r) acc = el l (u:(el r acc))
+  el E acc = acc    
+
+elements1 (T l u r) = (elements l) ++ [u] ++ (elements r)
+elements1 E = []
 
 isTree E = True
 isTree tree = a where 
