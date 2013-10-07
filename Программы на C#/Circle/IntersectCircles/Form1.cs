@@ -24,8 +24,8 @@ namespace Shell
             Circle c1 = CreateCircle();
             Circle c2 = CreateCircle();
             pictureBox.CreateGraphics().Clear(pictureBox.BackColor);
-            DrowCircle(c1);
-            DrowCircle(c2);
+            DrawCircle(c1);
+            DrawCircle(c2);
             if (c1.Intersect(c2)) label.Text = "Круги пересекаются";
             else label.Text = "Круги не пересекаются";
         }
@@ -36,7 +36,7 @@ namespace Shell
             return new Circle(rnd.Next(R, 200 - R), rnd.Next(R, 200 - R), R);
         }
 
-        public void DrowCircle(Circle c)
+        public void DrawCircle(Circle c)
         {
             pictureBox.CreateGraphics().DrawEllipse(new Pen(Color.Chocolate, 2), 
                 c.X - c.R,c.Y - c.R, 2 * c.R, 2 * c.R);
