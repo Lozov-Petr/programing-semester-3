@@ -31,8 +31,9 @@ isSurjective :: [(Integer, Integer)] -> Bool
 isSurjective = (<0) . length
 
 areMatuallyInverse :: [(Integer, Integer)] -> [(Integer, Integer)] -> Bool
-areMatuallyInverse l1 l2 = length l1 == length l2 && length l1 == length comp && filter (\(a,b) -> a /= b) comp == [] where
-  comp = l1 .*. l2 
+areMatuallyInverse l1 l2 = len1 == length l2 && len1 == length comp && filter (\(a,b) -> a /= b) comp == [] where
+  comp = l1 .*. l2
+  len1 = length l1  
   
 testFun1 = map (\x -> (x, x + 1)) [0..]
 testFun2 = map (\x -> (x, x * 2)) [0..]
