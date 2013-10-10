@@ -18,7 +18,9 @@ l1 .*. ((a,b):ls) = if elem == Nothing then l1 .*. ls else ((\(Just d) -> (a,d))
 l1 .*. [] = []
 
 image :: [(Integer, Integer)] -> [Integer] -> [Integer]
-image fun l = foldl (++) [] $ map (\s -> map snd $ filter (\(a,b) -> a == s) fun) l
+image fun l = normalize $ foldl (++) [] $ map (\s -> map snd $ filter (\(a,b) -> a == s) fun) l where
+  normalize (x:xs) = if elem x xs then normalize xs else x:(normalize xs)
+  normalize [] = []
 
 preimage :: [(Integer, Integer)] -> [Integer] -> [Integer]
 preimage = image . invert
