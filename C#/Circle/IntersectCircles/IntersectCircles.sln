@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell", "Shell.csproj", "{6C6321A9-0355-4526-8E0F-F32AF207CC5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomLib", "..\GromLib\GeomLib.csproj", "{C071049A-BB1A-4414-B156-D402B041D187}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,16 @@ Global
 		{6C6321A9-0355-4526-8E0F-F32AF207CC5F}.Release|Mixed Platforms.Build.0 = Release|x86
 		{6C6321A9-0355-4526-8E0F-F32AF207CC5F}.Release|x86.ActiveCfg = Release|x86
 		{6C6321A9-0355-4526-8E0F-F32AF207CC5F}.Release|x86.Build.0 = Release|x86
+		{C071049A-BB1A-4414-B156-D402B041D187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C071049A-BB1A-4414-B156-D402B041D187}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
