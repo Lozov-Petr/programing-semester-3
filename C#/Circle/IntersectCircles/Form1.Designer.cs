@@ -1,4 +1,4 @@
-﻿namespace Shell
+﻿namespace IntersectCircles
 {
     partial class Form1
     {
@@ -43,6 +43,7 @@
             this.pictureBox.Size = new System.Drawing.Size(205, 205);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             // 
             // button
             // 

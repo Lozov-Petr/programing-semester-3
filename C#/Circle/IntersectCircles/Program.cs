@@ -15,7 +15,7 @@ namespace IntersectCircles
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Shell.Form1());
+            Application.Run(new IntersectCircles.Form1());
         }
     }
 }

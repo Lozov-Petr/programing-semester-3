@@ -6,13 +6,14 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CircleLib;
 
-namespace Shell
+
+namespace IntersectCircles
 {
     public partial class Form1 : Form
     {
-        Random rnd = new Random();
+        Circle c1 = new Circle();
+        Circle c2 = new Circle();
 
         public Form1()
         {
@@ -21,25 +22,21 @@ namespace Shell
 
         private void button_Click(object sender, EventArgs e)
         {
-            Circle c1 = CreateCircle();
-            Circle c2 = CreateCircle();
-            pictureBox.CreateGraphics().Clear(pictureBox.BackColor);
-            DrawCircle(c1);
-            DrawCircle(c2);
+            c1.createRandCircle();
+            c2.createRandCircle();
+
+            pictureBox.Refresh();
+
             if (c1.Intersect(c2)) label.Text = "Круги пересекаются";
             else label.Text = "Круги не пересекаются";
         }
 
-        private Circle CreateCircle()
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            int R = rnd.Next(10, 65);
-            return new Circle(rnd.Next(R, 200 - R), rnd.Next(R, 200 - R), R);
-        }
-
-        public void DrawCircle(Circle c)
-        {
-            pictureBox.CreateGraphics().DrawEllipse(new Pen(Color.Chocolate, 2), 
-                c.X - c.R,c.Y - c.R, 2 * c.R, 2 * c.R);
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            e.Graphics.Clear(pictureBox.BackColor);
+            c1.Draw(e.Graphics);
+            c2.Draw(e.Graphics);
         }
     }
 }
