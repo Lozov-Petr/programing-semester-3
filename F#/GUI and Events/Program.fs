@@ -6,12 +6,13 @@ let form = new Form(
                         Text = "GUI and Events",
                         MaximizeBox = false,
                         MinimizeBox = false,
-                        Height = 500,
-                        Width = 500,
+                        Height = 700,
+                        Width = 700,
                         BackColor = Color.WhiteSmoke
                    )
 
 let graphics = form.CreateGraphics(SmoothingMode = Drawing2D.SmoothingMode.HighQuality)
+
 let mutable pointMouse = new Point(form.Width / 2, form.Height / 2)
 form.MouseMove.Add(fun p -> pointMouse <- new Point(p.X, p.Y))
 
@@ -26,17 +27,22 @@ let addPointToList list points =
     
     points::(take list 19)
 
-let timer = new Timers.Timer(4.0)
+let mutable canNext = true
+
+let timer = new Timers.Timer(10.0)
 timer.Start()
-let eventTime = timer.Elapsed |> Event.map (fun _ -> pointMouse) |> Event.pairwise
+let eventTime = timer.Elapsed |> Event.filter (fun _ -> canNext) |> Event.map (fun _ -> pointMouse) |> Event.pairwise
 
 eventTime.Add(fun x ->
     let draw (a:Point,b:Point) i =
-        graphics.DrawLine(new Pen(Color.Blue, float32 i), a, b)
         graphics.FillEllipse(Brushes.Blue, a.X - i / 2, a.Y - i / 2, i, i)
+        graphics.DrawLine(new Pen(Color.Blue, float32 i), a, b)
+    canNext <- false
     listPoint <- addPointToList listPoint x
     graphics.Clear(form.BackColor)
-    List.iter2 draw listPoint [for i in [(listPoint.Length)..(-1)..1] -> i])
+    List.iter2 draw listPoint [for i in [(listPoint.Length)..(-1)..1] -> i]
+    canNext <- true)
 
+ 
 
 Application.Run(form)
