@@ -1,4 +1,11 @@
-﻿open System
+﻿ (******************************
+           Лозов Пётр
+           Группа 271
+            16.10.13
+         Красивый курсор
+ *******************************)
+
+open System
 open System.Windows.Forms
 open System.Drawing
 
@@ -6,43 +13,54 @@ let form = new Form(
                         Text = "GUI and Events",
                         MaximizeBox = false,
                         MinimizeBox = false,
+                        FormBorderStyle = FormBorderStyle.Fixed3D,
                         Height = 700,
                         Width = 700,
                         BackColor = Color.WhiteSmoke
                    )
 
-let graphics = form.CreateGraphics(SmoothingMode = Drawing2D.SmoothingMode.HighQuality)
+type Cursor() =
+    let mutable seqPoint = Seq.empty
+    let mutable pointCursor = new Point(form.Width / 2, form.Height / 2)
 
-let mutable pointMouse = new Point(form.Width / 2, form.Height / 2)
-form.MouseMove.Add(fun p -> pointMouse <- new Point(p.X, p.Y))
+    member this.newPointCursor(x : int, y : int) = 
+        pointCursor <- new Point(x, y)
 
-let mutable listPoint = []
+    member this.getPointCursor = 
+        pointCursor
 
-let addPointToList list points =
-    
-    let rec take list n =
-        match list with
-        | x::xs when n > 0 -> x::(take xs (n - 1))
-        | _ -> []
-    
-    points::(take list 19)
+    member this.update(points : Point * Point) =
+        seqPoint <- Seq.truncate 20 <| Seq.append [points] seqPoint
 
+    member this.draw(g : Graphics) =
+        let draw (a:Point,b:Point) i =
+            use pen = new Pen(Color.Blue, float32 i)
+            g.FillEllipse(Brushes.Blue, a.X - i / 2, a.Y - i / 2, i, i)
+            g.DrawLine(pen, a, b)
+        g.SmoothingMode <- Drawing2D.SmoothingMode.HighQuality
+        Seq.iter2 draw seqPoint [(Seq.length seqPoint)..(-1)..1]
+
+let cursor = new Cursor()
 let mutable canNext = true
+
+form.MouseMove.Add(fun p -> cursor.newPointCursor(p.X, p.Y))
 
 let timer = new Timers.Timer(10.0)
 timer.Start()
-let eventTime = timer.Elapsed |> Event.filter (fun _ -> canNext) |> Event.map (fun _ -> pointMouse) |> Event.pairwise
+let eventTime = timer.Elapsed 
+                |> Event.filter (fun _ -> canNext) 
+                |> Event.map (fun _ -> cursor.getPointCursor) 
+                |> Event.pairwise
 
 eventTime.Add(fun x ->
-    let draw (a:Point,b:Point) i =
-        graphics.FillEllipse(Brushes.Blue, a.X - i / 2, a.Y - i / 2, i, i)
-        graphics.DrawLine(new Pen(Color.Blue, float32 i), a, b)
     canNext <- false
-    listPoint <- addPointToList listPoint x
-    graphics.Clear(form.BackColor)
-    List.iter2 draw listPoint [for i in [(listPoint.Length)..(-1)..1] -> i]
-    canNext <- true)
+    cursor.update(x)
+    form.Invalidate()
+    )
 
- 
-
+form.Paint.Add(fun x ->
+    cursor.draw(x.Graphics)
+    canNext <- true
+    )
+    
 Application.Run(form)
