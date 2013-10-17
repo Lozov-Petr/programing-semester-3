@@ -11,7 +11,7 @@ open System.Drawing
 
 type myCursor(startPointCursor : Point) =
     
-    let mutable seqPoint = Seq.empty
+    let mutable seqPoints = Seq.empty
     let mutable pointCursor = startPointCursor
 
     let tim = new Timers.Timer(
@@ -28,7 +28,7 @@ type myCursor(startPointCursor : Point) =
         pointCursor
 
     member this.update(points : Point * Point) =
-        seqPoint <- Seq.truncate 30 <| Seq.append [points] seqPoint
+        seqPoints <- Seq.truncate 30 <| Seq.append [points] seqPoints
 
     member this.draw(g : Graphics) =
         let draw (a:Point,b:Point) i =
@@ -36,7 +36,7 @@ type myCursor(startPointCursor : Point) =
             g.FillEllipse(Brushes.Blue, a.X - i / 2, a.Y - i / 2, i, i)
             g.DrawLine(pen, a, b)
         g.SmoothingMode <- Drawing2D.SmoothingMode.HighQuality
-        Seq.iter2 draw seqPoint [(Seq.length seqPoint)..(-1)..1]
+        Seq.iter2 draw seqPoints [(Seq.length seqPoints)..(-1)..1]
 
 let form = new Form(
                        Text = "GUI and Events",
@@ -45,7 +45,6 @@ let form = new Form(
                        FormBorderStyle = FormBorderStyle.Fixed3D,
                        Height = 700,
                        Width = 700,
-                       Top = 0,
                        BackColor = Color.WhiteSmoke
                    )
 
