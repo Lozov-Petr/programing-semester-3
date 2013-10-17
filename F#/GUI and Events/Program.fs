@@ -9,20 +9,18 @@ open System
 open System.Windows.Forms
 open System.Drawing
 
-let form = new Form(
-                        Text = "GUI and Events",
-                        MaximizeBox = false,
-                        MinimizeBox = false,
-                        FormBorderStyle = FormBorderStyle.Fixed3D,
-                        Height = 700,
-                        Width = 700,
-                        BackColor = Color.WhiteSmoke
-                   )
-
-type Cursor() =
+type myCursor(startPointCursor : Point) =
+    
     let mutable seqPoint = Seq.empty
-    let mutable pointCursor = new Point(form.Width / 2, form.Height / 2)
+    let mutable pointCursor = startPointCursor
 
+    let tim = new Timers.Timer(
+                                   Interval = 10.0, 
+                                   Enabled  = true                              
+                              )
+
+    member this.timer = tim
+    
     member this.newPointCursor(x : int, y : int) = 
         pointCursor <- new Point(x, y)
 
@@ -30,7 +28,7 @@ type Cursor() =
         pointCursor
 
     member this.update(points : Point * Point) =
-        seqPoint <- Seq.truncate 20 <| Seq.append [points] seqPoint
+        seqPoint <- Seq.truncate 30 <| Seq.append [points] seqPoint
 
     member this.draw(g : Graphics) =
         let draw (a:Point,b:Point) i =
@@ -40,27 +38,35 @@ type Cursor() =
         g.SmoothingMode <- Drawing2D.SmoothingMode.HighQuality
         Seq.iter2 draw seqPoint [(Seq.length seqPoint)..(-1)..1]
 
-let cursor = new Cursor()
-let mutable canNext = true
+let form = new Form(
+                       Text = "GUI and Events",
+                       MaximizeBox = false,
+                       MinimizeBox = false,
+                       FormBorderStyle = FormBorderStyle.Fixed3D,
+                       Height = 700,
+                       Width = 700,
+                       Top = 0,
+                       BackColor = Color.WhiteSmoke
+                   )
+
+Cursor.Hide()
+let cursor = new myCursor(new Point(form.Width / 2, form.Height / 2))
 
 form.MouseMove.Add(fun p -> cursor.newPointCursor(p.X, p.Y))
 
-let timer = new Timers.Timer(10.0)
-timer.Start()
-let eventTime = timer.Elapsed 
-                |> Event.filter (fun _ -> canNext) 
+let eventTime = cursor.timer.Elapsed 
                 |> Event.map (fun _ -> cursor.getPointCursor) 
                 |> Event.pairwise
 
-eventTime.Add(fun x ->
-    canNext <- false
-    cursor.update(x)
-    form.Invalidate()
-    )
+eventTime.Add(
+                 fun x ->
+                     cursor.update(x)
+                     form.Invalidate()
+             )
 
-form.Paint.Add(fun x ->
-    cursor.draw(x.Graphics)
-    canNext <- true
-    )
+form.Paint.Add(
+                  fun x -> 
+                      cursor.draw(x.Graphics)
+              )
     
 Application.Run(form)
