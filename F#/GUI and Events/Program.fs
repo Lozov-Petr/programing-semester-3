@@ -16,9 +16,9 @@ type BeautifulCursor(container : ContainerControl, size : float32, length : int)
     let mutable pointCursor = 
         new PointF(float32 <| container.Width / 2, float32 <| container.Height / 2)
     
-    let mutable seqPoints = 
-        let startCursor = (pointCursor, pointCursor), color
-        seq {for i in 1..length -> startCursor}
+    let mutable seqLines = 
+        let startLine = (pointCursor, pointCursor), color
+        seq {for i in 1..length -> startLine}
 
     let size = 
         if size > 0.0f then size else failwith "Invalid value Size."
@@ -50,7 +50,7 @@ type BeautifulCursor(container : ContainerControl, size : float32, length : int)
                           | ( r , 0 , 0 ) when r >  0  -> (r-5, 0 , 0 )
                           | _ -> color
 
-                      seqPoints <- Seq.truncate length <| Seq.append [x] seqPoints
+                      seqLines <- Seq.truncate length <| Seq.append [x] seqLines
                       color <- nextColor color
                       container.Invalidate()
                  )
@@ -73,7 +73,7 @@ type BeautifulCursor(container : ContainerControl, size : float32, length : int)
                                         x.Graphics.FillEllipse(brush, p1.X - i / 2.0f, p1.Y - i / 2.0f, i, i)
                                         x.Graphics.DrawLine(pen, p1, p2)
                                     x.Graphics.SmoothingMode <- Drawing2D.SmoothingMode.HighQuality
-                                    Seq.iter2 draw (List.rev <| List.ofSeq seqPoints) 
+                                    Seq.iter2 draw (List.rev <| List.ofSeq seqLines) 
                                         <| List.map (fun x -> float32 x * size / float32 length) [1..length]
                            )
               
@@ -93,6 +93,6 @@ type myForm() =
 Application.Run(
                     let form = new myForm()
                     form.doDoubleBuffered
-                    let cursor = new BeautifulCursor(form, -20.0f, 20)
+                    let cursor = new BeautifulCursor(form, 20.0f, 20)
                     form
                )
