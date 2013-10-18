@@ -77,7 +77,7 @@ type BeautifulCursor(container : ContainerControl, size : float32, length : int)
                                         <| List.map (fun x -> float32 x * size / float32 length) [1..length]
                            )
               
-type myForm() =        
+type myForm() as this =        
     inherit Form(
                     Text = "GUI and Events",
                     MaximizeBox = false,
@@ -88,11 +88,10 @@ type myForm() =
                     BackColor = Color.WhiteSmoke                                    
                 )
 
-    member this.doDoubleBuffered = this.DoubleBuffered <- true
+    let doDoubleBuffered = this.DoubleBuffered <- true
     
 Application.Run(
                     let form = new myForm()
-                    form.doDoubleBuffered
                     let cursor = new BeautifulCursor(form, 20.0f, 20)
                     form
                )
