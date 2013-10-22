@@ -12,7 +12,7 @@ insert (_, T k l r) x = balance $ if x < k then T k (insert l x) r else T k l (i
       else (hlr + 1, T klr (hll + 1, T kl ll lrl) (hr + 1, T k lrr r))
     else if hr - hl > 1 then
       if hrr - hrl > 0 then (hrr + 1, T kr (hl + 1, T k l rl) rr)
-      else (klr + 1, T krl (hl + 1, T k l rll) (hrr + 1, T kr rlr rr))
+      else (hrl + 1, T krl (hl + 1, T k l rll) (hrr + 1, T kr rlr rr))
     else (1 + max hl hr, t) where
       (hl, tl) = l
       (T kl ll@(hll, _) lr) = tl
