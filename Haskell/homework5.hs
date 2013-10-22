@@ -1,18 +1,21 @@
-data Tree = T Integer (Integer, Tree) (Integer, Tree) | E
+data Tree = T Integer Integer Tree Tree | E
 
 instance Show Tree where
   show E = "E"
-  show (T k l r) = (show k) ++ " " ++(show l) ++ " " ++(show r)
+  show (T h k l r) = "(|" ++ (show h) ++ "|" ++ (show k) ++ " " ++(show l) ++ " " ++(show r) ++ ")"
+
   
-insert (0, E) x = (1, T x (0, E) (0, E))
-insert (_, T k l r) x = balance $ if x < k then T k (insert l x) r else T k l (insert r x) where
-  balance t@(T k l r) =
+insert E x = T 1 x E E
+insert (T _ k l r) x = balance k newL newR  if x < k then T k (insert l x) r else T k l (insert r x) where
+  newL = if x < k then insert l x else l
+  newR = if x < k then r else insert r x
+  balance k l r =
     if hl - hr > 1 then
-      if hll - hlr > 0 then (hll + 1, T kl ll (hr + 1, T k lr r))
-      else (hlr + 1, T klr (hll + 1, T kl ll lrl) (hr + 1, T k lrr r))
+      if hll - hlr > 0 then T (hll + 1) kl ll (T (hr + 1) k lr r)
+      else T (hlr + 1) klr (T (hll + 1) kl ll lrl) (T (hr + 1) k lrr r))
     else if hr - hl > 1 then
-      if hrr - hrl > 0 then (hrr + 1, T kr (hl + 1, T k l rl) rr)
-      else (hrl + 1, T krl (hl + 1, T k l rll) (hrr + 1, T kr rlr rr))
+      if hrr - hrl > 0 then (T (hrr + 1) kr (T (hl + 1) k l rl) rr)
+      else (klr + 1, T krl (T (hl + 1) k l rll) (T (hrr + 1) kr rlr rr))
     else (1 + max hl hr, t) where
       (hl, tl) = l
       (T kl ll@(hll, _) lr) = tl
@@ -22,8 +25,6 @@ insert (_, T k l r) x = balance $ if x < k then T k (insert l x) r else T k l (i
       (T klr lrl lrr) = tlr
       (hrl, trl) = rl
       (T krl rll rlr) = trl
-
-
 
 insertList tree list = foldl insert tree list
 createTree = insertList (0, E)
