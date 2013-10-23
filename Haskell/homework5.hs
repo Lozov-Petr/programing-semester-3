@@ -11,7 +11,7 @@ data Tree a = T Integer a (Tree a) (Tree a) | E
 
 instance Show a => Show (Tree a) where
   show tree = printTree "" tree where
-    printTree str E = "E"
+    printTree _ E = "E"
     printTree str (T h k l r) = 
       node ++ "--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
         node = show (h,k)
