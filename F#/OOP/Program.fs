@@ -267,4 +267,4 @@ type MyForm(numberCreature : int) as this =
                             List.iter (fun ((X, Y), R) -> g.FillEllipse(red, X - R, Y - R, 2.0f * R, 2.0f * R)) world.ListDrawingWolf
                       )    
 
-Application.Run(new MyForm(10))S
+Application.Run(new MyForm(10))
