@@ -1,30 +1,35 @@
-data Tree = T Integer Integer Tree Tree | E
+data Tree a = T Integer a (Tree a) (Tree a) | E
 
-instance Show Tree where
-  show E = "E"
-  show (T h k l r) = "(|" ++ (show h) ++ "|" ++ (show k) ++ " " ++(show l) ++ " " ++(show r) ++ ")"
+instance Show a => Show (Tree a) where
+  show tree = printTree "" tree where
+    printTree str E = "E"
+    printTree str (T h k l r) = node ++ "--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
+      node = show (h,k)
+      newStr = str ++ "|" ++ map (\_ -> ' ') [1..length node + 1]
 
-  
 insert E x = T 1 x E E
-insert (T _ k l r) x = balance k newL newR  if x < k then T k (insert l x) r else T k l (insert r x) where
+insert t@(T _ k l r) x = balance k newL newR where
   newL = if x < k then insert l x else l
-  newR = if x < k then r else insert r x
+  newR = if k < x then insert r x else r
   balance k l r =
-    if hl - hr > 1 then
-      if hll - hlr > 0 then T (hll + 1) kl ll (T (hr + 1) k lr r)
-      else T (hlr + 1) klr (T (hll + 1) kl ll lrl) (T (hr + 1) k lrr r))
-    else if hr - hl > 1 then
-      if hrr - hrl > 0 then (T (hrr + 1) kr (T (hl + 1) k l rl) rr)
-      else (klr + 1, T krl (T (hl + 1) k l rll) (T (hrr + 1) kr rlr rr))
-    else (1 + max hl hr, t) where
-      (hl, tl) = l
-      (T kl ll@(hll, _) lr) = tl
-      (hr, tr) = r
-      (T kr rl rr@(hrr, _)) = tr
-      (hlr, tlr) = lr
-      (T klr lrl lrr) = tlr
-      (hrl, trl) = rl
-      (T krl rll rlr) = trl
+    if hl - hr > 1 then rotateR k (if hll > hlr then l else rotateL kl hll ll lr) hr r else 
+    if hr - hl > 1 then rotateL k hl l (if hrr > hrl then r else rotateR kr rl hrr rr) else
+    T (1 + max hl hr) k l r where
+  
+      ht (T h _ _ _) = h
+      ht _ = 0
+      
+      rotateR k (T _ kl ll lr) hr r = T (hr + 2) kl ll (T (hr + 1) k lr r)
+      rotateL k hl l (T _ kl rl rr) = T (hl + 2) kr (T (hl + 1) k l rl) rr
+      
+      T _ kl ll lr = l
+      T _ kr rl rr = r      
+      hl = ht l
+      hr = ht r
+      hll = ht ll
+      hlr = ht lr
+      hrl = ht rl
+      hrr = ht rr
 
-insertList tree list = foldl insert tree list
-createTree = insertList (0, E)
+insertList tree = foldl insert tree
+createTree list = insertList E list
