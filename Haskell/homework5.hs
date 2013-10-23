@@ -12,9 +12,10 @@ data Tree a = T Integer a (Tree a) (Tree a) | E
 instance Show a => Show (Tree a) where
   show tree = printTree "" tree where
     printTree str E = "E"
-    printTree str (T h k l r) = node ++ "--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
-      node = show (h,k)
-      newStr = str ++ "|" ++ map (\_ -> ' ') [1..length node + 1]
+    printTree str (T h k l r) = 
+      node ++ "--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
+        node = show (h,k)
+        newStr = str ++ "|" ++ map (\_ -> ' ') [1..length node + 1]
       
 --------- Height Tree ----------
  
@@ -24,7 +25,7 @@ ht _ = 0
 ------------ Insert -------------
  
 insert E x = T 1 x E E
-insert t@(T _ k l r) x = balance k newL newR where
+insert (T _ k l r) x = balance k newL newR where
   newL = if x < k then insert l x else l
   newR = if k < x then insert r x else r
   balance k l r =
@@ -48,7 +49,7 @@ insert t@(T _ k l r) x = balance k newL newR where
 insertList tree = foldl insert tree
 createTree list = insertList E list
 
-------------- Tests--------------
+------------- Tests -------------
 
 isAVLTree E = True
 isAVLTree tree = isSearchTree tree && isAVL tree where
