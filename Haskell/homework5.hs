@@ -20,7 +20,7 @@ insert t@(T _ k l r) x = balance k newL newR where
       ht _ = 0
       
       rotateR k (T _ kl ll lr) hr r = T (hr + 2) kl ll (T (hr + 1) k lr r)
-      rotateL k hl l (T _ kl rl rr) = T (hl + 2) kr (T (hl + 1) k l rl) rr
+      rotateL k hl l (T _ kr rl rr) = T (hl + 2) kr (T (hl + 1) k l rl) rr
       
       T _ kl ll lr = l
       T _ kr rl rr = r      
