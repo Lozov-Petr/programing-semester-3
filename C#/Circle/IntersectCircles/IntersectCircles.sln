@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell", "Shell.csproj", "{6C6321A9-0355-4526-8E0F-F32AF207CC5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomLib", "..\GromLib\GeomLib.csproj", "{C071049A-BB1A-4414-B156-D402B041D187}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomLib", "..\GeomLib\GeomLib.csproj", "{C071049A-BB1A-4414-B156-D402B041D187}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

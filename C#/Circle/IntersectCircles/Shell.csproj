@@ -78,7 +78,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GromLib\GeomLib.csproj">
+    <ProjectReference Include="..\GeomLib\GeomLib.csproj">
       <Project>{C071049A-BB1A-4414-B156-D402B041D187}</Project>
       <Name>GeomLib</Name>
     </ProjectReference>
