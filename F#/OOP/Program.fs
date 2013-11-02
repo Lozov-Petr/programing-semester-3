@@ -1,40 +1,7 @@
 ﻿open System
 open System.Drawing
+open System.Windows
 open System.Windows.Forms
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// Класс работы с векторами
-type Vector(vector : float * float) =
-    
-    static let rnd = new Random()
-    
-    let mutable (x, y) = vector
-    
-    member this.X = x
-    member this.Y = y
-
-    // Длина вектора
-    member this.Len = Math.Sqrt(x * x + y * y)
-        
-    // Сумма двух векторов
-    member this.Add(v : Vector) = new Vector(x + v.X, y + v.Y)
-        
-    // Скалярное произведение числа на вектор
-    member this.Mul(f : float) = new Vector(f * x, f * y)
-
-    // Разность двух векторов
-    member this.Sub(v : Vector) = this.Add(v.Mul(-1.0))
-    
-    // Нормализация вектора
-    member this.Norm = this.Mul(1.0 / this.Len)
-
-    // Преведение вектора к типу flaot32 * float32
-    member this.float32 = (float32 x, float32 y)
-
-    // Создание вектора со случайнимы координатими в диапазоне [0, f)
-    static member rndVector(f : float) = 
-        new Vector(rnd.NextDouble() * f, rnd.NextDouble() * f)
          
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +10,7 @@ type Creature(maxAge : int, maxWeight : int, coordinates : Vector) =
 
     //Размер мира общий для всех существ
     static let mutable sizeWorld = 600
+    static let rnd = new Random()
 
     let maxAge = maxAge
     let maxWeight = maxWeight
@@ -51,16 +19,18 @@ type Creature(maxAge : int, maxWeight : int, coordinates : Vector) =
     let mutable curAge = 0
     let mutable curWeight = maxWeight / 2
     let mutable coordinates = 
-        coordinates.Add(Vector.rndVector(200.0).Sub(new Vector((100.0, 100.0))))
+        coordinates + new Vector(rnd.NextDouble() * 200.0 - 100.0, rnd.NextDouble() * 200.0 - 100.0)
 
     static member SizeWorld 
         with get() = sizeWorld
         and set(value) = sizeWorld <- value
 
+    static member RandomFloat = rnd.NextDouble()
+
     member this.IsAlive = isAlive
     member this.MaxAge = maxAge
     member this.MaxWeight = maxWeight
-
+    
     member this.Coordinates
         with get() = coordinates
         and set(value) = coordinates <- value
@@ -88,10 +58,11 @@ type Creature(maxAge : int, maxWeight : int, coordinates : Vector) =
         isAlive && curWeight >= maxWeight
 
     member this.Distance(creature : Creature) =
-        creature.Coordinates.Sub(this.Coordinates).Len
+        (creature.Coordinates - this.Coordinates).Length
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+[<AbstractClass>]
 type Plant(maxAge : int, maxWeight : int, coordinates : Vector) =
     inherit Creature(maxAge, maxWeight, coordinates)
 
@@ -102,6 +73,7 @@ type Plant(maxAge : int, maxWeight : int, coordinates : Vector) =
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+[<AbstractClass>]
 type Animal(maxAge : int, maxWeight : int, speed : float, coordinates : Vector) =
     inherit Creature(maxAge, maxWeight, coordinates)
 
@@ -118,10 +90,13 @@ type Animal(maxAge : int, maxWeight : int, speed : float, coordinates : Vector) 
             else this.Die
 
     member this.Run(creature : Creature) = 
-        this.Coordinates <- creature.Coordinates.Sub(this.Coordinates).Norm.Mul(speed).Add(this.Coordinates)
+        let mutable vector = creature.Coordinates - this.Coordinates
+        vector.Normalize()
+        this.Coordinates <-  speed * vector + this.Coordinates
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+[<AbstractClass>]
 type Herbivorous(maxAge : int, maxWeight : int, speed : float, coordinates : Vector) =
     inherit Animal(maxAge, maxWeight, speed, coordinates)
 
@@ -132,6 +107,7 @@ type Herbivorous(maxAge : int, maxWeight : int, speed : float, coordinates : Vec
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+[<AbstractClass>]
 type Predator(maxAge : int, maxWeight : int, speed : float, coordinates : Vector) =
     inherit Animal(maxAge, maxWeight, speed, coordinates)
 
@@ -143,9 +119,15 @@ type Predator(maxAge : int, maxWeight : int, speed : float, coordinates : Vector
 /////////////////////////////////////////////////////////////////////////////////////////
 
 type Grass(coordinates : Vector) =
+    
+    // Максимальный возраст травы - 100
+    // Максимальный вес травы     -  20
     inherit Plant(100, 20, coordinates)
     
-    new() = new Grass(Vector.rndVector(float Creature.SizeWorld))
+    new() = new Grass(
+                        let sizeV = float Creature.SizeWorld
+                        new Vector(Creature.RandomFloat * sizeV, Creature.RandomFloat * sizeV)
+                     )
 
     member this.Progeny =
         if this.CanProgeny then
@@ -156,9 +138,16 @@ type Grass(coordinates : Vector) =
 /////////////////////////////////////////////////////////////////////////////////////////
 
 type Sheep(coordinates : Vector) =
+    
+    // Максимальный возраст волка - 200
+    // Максимальный вес волка     - 200
+    // Скорость волка             - 5.0
     inherit Herbivorous(200, 200, 5.0, coordinates)
 
-    new() = new Sheep(Vector.rndVector(float Creature.SizeWorld))
+    new() = new Sheep(
+                        let sizeV = float Creature.SizeWorld
+                        new Vector(Creature.RandomFloat * sizeV, Creature.RandomFloat * sizeV)
+                     )
 
     member this.Progeny =
         if this.CanProgeny then
@@ -169,9 +158,16 @@ type Sheep(coordinates : Vector) =
 /////////////////////////////////////////////////////////////////////////////////////////
 
 type Wolf(coordinates : Vector) =
+
+    // Максимальный возраст волка - 150
+    // Максимальный вес волка     - 150
+    // Скорость волка             - 4.0
     inherit Predator(150, 150, 4.0, coordinates)
 
-    new() = new Wolf(Vector.rndVector(float Creature.SizeWorld))
+    new() = new Wolf(
+                        let sizeV = float Creature.SizeWorld
+                        new Vector(Creature.RandomFloat * sizeV, Creature.RandomFloat * sizeV)
+                    )
 
     member this.Progeny =
         if this.CanProgeny then
@@ -237,9 +233,15 @@ type World(numberCreature : int, sizeWorld : int) =
                        ) listWolfs
                      )
 
-    member this.ListDrawingGrass = listGrasses |> List.map (fun x -> (x.Coordinates.float32, float32 x.CurWeight / 10.0f))
-    member this.ListDrawingSheep = listSheep |> List.map (fun x -> (x.Coordinates.float32, float32 x.CurWeight / 10.0f))
-    member this.ListDrawingWolf = listWolfs |> List.map (fun x -> (x.Coordinates.float32, float32 x.CurWeight / 10.0f))
+    member this.ListDrawingGrass = 
+            listGrasses 
+            |> List.map (fun x -> (float32 x.Coordinates.X, float32 x.Coordinates.Y, float32 x.CurWeight / 10.0f))
+    member this.ListDrawingSheep = 
+            listSheep 
+            |> List.map (fun x -> (float32 x.Coordinates.X, float32 x.Coordinates.Y, float32 x.CurWeight / 10.0f))
+    member this.ListDrawingWolf = 
+            listWolfs 
+            |> List.map (fun x -> (float32 x.Coordinates.X, float32 x.Coordinates.Y, float32 x.CurWeight / 10.0f))
     member this.EventTime = eventTime
 
 type MyForm(numberCreature : int, sizeWorld : int) as this =
@@ -266,11 +268,12 @@ type MyForm(numberCreature : int, sizeWorld : int) as this =
                             use green = new SolidBrush(Color.Green)
                             use blue = new SolidBrush(Color.Blue)
                             use red = new SolidBrush(Color.Red)
-                            List.iter (fun ((X, Y), R) -> 
+                            // Отрисовка всех существ виде кругов
+                            List.iter (fun (X, Y, R) -> 
                                 g.FillEllipse(green, X - R, Y - R, 2.0f * R, 2.0f * R)) world.ListDrawingGrass
-                            List.iter (fun ((X, Y), R) -> 
+                            List.iter (fun (X, Y, R) -> 
                                 g.FillEllipse(blue, X - R, Y - R, 2.0f * R, 2.0f * R)) world.ListDrawingSheep
-                            List.iter (fun ((X, Y), R) ->
+                            List.iter (fun (X, Y, R) ->
                                 g.FillEllipse(red, X - R, Y - R, 2.0f * R, 2.0f * R)) world.ListDrawingWolf
                       )    
 
