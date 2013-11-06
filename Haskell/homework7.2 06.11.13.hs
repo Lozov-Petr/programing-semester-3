@@ -1,4 +1,4 @@
-type Parser a = String -> [(a,String)]
+п»їtype Parser a = String -> [(a,String)]
 
 empty :: Parser a
 empty = \s -> []
@@ -29,19 +29,19 @@ eof = map fst . filter ((==[]) . snd)
 
 ------------------------------------------------------------------------------------------
 
-data E = Var String   -- Переменная
-       | Num Integer  -- Число
+data E = Var String   -- РџРµСЂРµРјРµРЅРЅР°СЏ
+       | Num Integer  -- Р§РёСЃР»Рѕ
        | Mul E E      --  *
-	     | Div E E      --  /
-	     | Add E E      --  +
-	     | Sub E E      --  -
-	     | Les E E      --  <
-	     | LoE E E      -- <=
-	     | Equ E E      -- ==
-	     | NEq E E      -- !=	     
-	     | MoE E E      -- >=
+       | Div E E      --  /
+       | Add E E      --  +
+       | Sub E E      --  -
+       | Les E E      --  <
+       | LoE E E      -- <=
+       | Equ E E      -- ==
+       | NEq E E      -- !=	     
+       | MoE E E      -- >=
        | Mor E E      --  >
-	     | Or  E E      -- ||
+       | Or  E E      -- ||
        | And E E      -- &&
 
 data Ass = LeftAss | RightAss | NotAss  
