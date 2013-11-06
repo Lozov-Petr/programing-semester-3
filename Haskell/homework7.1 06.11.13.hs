@@ -1,4 +1,4 @@
-﻿type Parser a = String -> [(a,String)]
+type Parser a = String -> [(a,String)]
 
 empty :: Parser a
 empty = \s -> []
@@ -29,20 +29,9 @@ eof = map fst . filter ((==[]) . snd)
 
 ------------------------------------------------------------------------------------------
 
-data E = Var String   -- Переменная
-       | Num Integer  -- Число
-       | Mul E E      --  *
-       | Div E E      --  /
-       | Add E E      --  +
-       | Sub E E      --  -
-       | Les E E      --  <
-       | LoE E E      -- <=
-       | Equ E E      -- ==
-       | NEq E E      -- !=	     
-       | MoE E E      -- >=
-       | Mor E E      --  >
-       | Or  E E      -- ||
-       | And E E      -- &&
+data E = Var String   
+       | Num Integer  
+       | Op  String E E
 
 oneOf = foldr ((|||) . sym) empty
 
@@ -55,15 +44,15 @@ ident   = letter ||> (\a -> many (letter ||| digit) ||> \b -> val $ Var (a:b))
 primary = ident ||| literal
 	              ||| sym '(' ||> (\_ -> expr ||> (\a -> sym ')' ||> \_ -> val a))
 	  
-multi   = allOptExpr primary multi   ["*","/"]                     [Mul,Div]	   
-addi    = allOptExpr multi   addi    ["+","-"]                     [Add,Sub]
-reli    = allOptExpr addi    addi    ["<","<=","==","!=",">=",">"] [Les,LoE,Equ,NEq,MoE,Mor]
-logiAnd = allOptExpr reli    logiAnd ["&&"]                        [And]
-logiOr  = allOptExpr logiAnd logiOr  ["||"]                        [Or]
+multi   = allOptExpr primary multi   ["*","/"]   
+addi    = allOptExpr multi   addi    ["+","-"]
+reli    = allOptExpr addi    addi    ["<","<=","==","!=",">=",">"]
+logiAnd = allOptExpr reli    logiAnd ["&&"]
+logiOr  = allOptExpr logiAnd logiOr  ["||"]
 	  
-allOptExpr :: Parser E -> Parser E -> [String] -> [E -> E -> E] -> Parser E
-allOptExpr par1 par2 lStr lOp = par1 ||> (\a -> op ||> (\o -> par2 ||> \b -> val $ o a b)) ||| par1 where 
-  op = foldl (\acc (s, f) -> acc ||| prefix s ||> \_ -> val f) empty $ zip lStr lOp where
+allOptExpr :: Parser E -> Parser E -> [String] -> Parser E
+allOptExpr par1 par2 lStr = par1 ||> (\a -> op ||> (\o -> par2 ||> \b -> val $ o a b)) ||| par1 where 
+  op = foldl (\acc s -> acc ||| prefix s ||> \_ -> val $ Op s) empty lStr where
 	  prefix [x]    = sym x
 	  prefix (x:xs) = sym x ||> \_ -> prefix xs
  
@@ -73,21 +62,7 @@ expr = logiOr
 
 instance Show E where
   show tree = "\n    " ++ printTree "    " tree ++ "\n" where
-    printTree _ (Num a) = show a
-    printTree _ (Var s) = s
-    printTree str x = case x of
-              Mul l r -> print "*"  l r
-              Div l r -> print "/"  l r
-              Add l r -> print "+"  l r
-              Sub l r -> print "-"  l r
-              Les l r -> print "<"  l r
-              LoE l r -> print "<=" l r
-              Equ l r -> print "==" l r
-              NEq l r -> print "!=" l r
-              MoE l r -> print ">=" l r
-              Mor l r -> print ">"  l r
-              Or  l r -> print "||" l r
-              And l r -> print "&&" l r
-      where
-        print s1 l r = "[" ++ s1 ++ "]--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
-          newStr = str ++ "|" ++ map (\_ -> ' ') [1..length s1 + 3]
+    printTree _   (Num a) = show a
+    printTree _   (Var s) = s
+    printTree str (Op op l r) = "[" ++ op ++ "]--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
+      newStr = str ++ "|" ++ map (\_ -> ' ') [1..length op + 3]
