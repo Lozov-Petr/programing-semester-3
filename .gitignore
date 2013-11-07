@@ -1,4 +1,6 @@
-*/*/bin/
-*/*/obj/
+*/Debug/
+*/Release/
+*/bin/
+*/obj/
 *.sln
 *.suo
