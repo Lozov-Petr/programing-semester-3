@@ -46,11 +46,11 @@ ident   = letter ||> (\a -> many (letter ||| digit) ||> \b -> val $ Var (a:b))
 primary = ident ||| literal
 	              ||| sym '(' ||> (\_ -> expr ||> (\a -> sym ')' ||> \_ -> val a))
 	  
-multi   = allOptExpr primary LeftAss   ["*","/"]	   
-addi    = allOptExpr multi   LeftAss   ["+","-"]
-reli    = allOptExpr addi    NotAss    ["<","<=","==","!=",">=",">"]
-logiAnd = allOptExpr reli    LeftAss   ["&&"]
-logiOr  = allOptExpr logiAnd LeftAss   ["||"]
+multi   = allOptExpr primary LeftAss    ["*","/"]	   
+addi    = allOptExpr multi   LeftAss    ["+","-"]
+reli    = allOptExpr addi    NotAss     ["<","<=","==","!=",">=",">"]
+logiAnd = allOptExpr reli    RightAss   ["&&"]
+logiOr  = allOptExpr logiAnd RightAss   ["||"]
 	  
 allOptExpr :: Parser E -> Ass -> [String] -> Parser E
 allOptExpr par ass lStr = par ||> (\a -> many (op ||> (\o -> par ||> \b -> val (o,b))) ||> \l -> result ass a l) where 
