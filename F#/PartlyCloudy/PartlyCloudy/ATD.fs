@@ -10,7 +10,7 @@ type CreatureType =
     | Balloon
 
 type DaylightType =
-    | Morhing
+    | Morning
     | Day 
-    | Evenin
+    | Evening
     | Night
