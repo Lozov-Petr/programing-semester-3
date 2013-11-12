@@ -29,11 +29,22 @@ eof = map fst . filter ((==[]) . snd)
 
 ------------------------------------------------------------------------------------------
 
-data E = Var String
-       | Num Integer
-       | Op  String E E
+data E = Var String   -- Переменная
+       | Num Integer  -- Число
+       | Mul E E      --  *
+       | Div E E      --  /
+       | Add E E      --  +
+       | Sub E E      --  -
+       | Les E E      --  <
+       | LoE E E      -- <=
+       | Equ E E      -- ==
+       | NEq E E      -- !=	     
+       | MoE E E      -- >=
+       | Mor E E      --  >
+       | Or  E E      -- ||
+       | And E E      -- &&
 
-data Ass = LeftAss | RightAss | NotAss  
+data Assoc = LeftAssoc | RightAssoc | NotAssoc  
 
 oneOf = foldr ((|||) . sym) empty
 
@@ -46,23 +57,23 @@ ident   = letter ||> (\a -> many (letter ||| digit) ||> \b -> val $ Var (a:b))
 primary = ident ||| literal
 	              ||| sym '(' ||> (\_ -> expr ||> (\a -> sym ')' ||> \_ -> val a))
 	  
-multi   = allOptExpr primary LeftAss    ["*","/"]	   
-addi    = allOptExpr multi   LeftAss    ["+","-"]
-reli    = allOptExpr addi    NotAss     ["<","<=","==","!=",">=",">"]
-logiAnd = allOptExpr reli    RightAss   ["&&"]
-logiOr  = allOptExpr logiAnd RightAss   ["||"]
+multi   = allOptExpr primary LeftAssoc    ["*","/"]                     [Mul,Div]	   
+addi    = allOptExpr multi   LeftAssoc    ["+","-"]                     [Add,Sub]
+reli    = allOptExpr addi    NotAssoc     ["<","<=","==","!=",">=",">"] [Les,LoE,Equ,NEq,MoE,Mor]
+logiAnd = allOptExpr reli    RightAssoc   ["&&"]                        [And]
+logiOr  = allOptExpr logiAnd RightAssoc   ["||"]                        [Or]
 	  
-allOptExpr :: Parser E -> Ass -> [String] -> Parser E
-allOptExpr par ass lStr = par ||> (\a -> many (op ||> (\o -> par ||> \b -> val (o,b))) ||> \l -> result ass a l) where 
+allOptExpr :: Parser E -> Assoc -> [String] -> [E -> E -> E] -> Parser E
+allOptExpr par ass lStr lOp = par ||> (\a -> many (op ||> (\o -> par ||> \b -> val (o,b))) ||> \l -> result ass a l) where 
       result ass a l = case ass of
-          LeftAss  -> val leftFold
-          RightAss -> val rightFold
-          NotAss   -> if length l <= 1 then val leftFold else empty
+          LeftAssoc  -> val leftFold
+          RightAssoc -> val rightFold
+          NotAssoc   -> if length l <= 1 then val leftFold else empty
         where
           leftFold  = foldl (\a (o,b) -> o a b) a l
           rightFold = if length l /= 0 then let (o,b) = unzip l in foldr (\(o,b) a -> o b a) (last b) (zip o (a:b)) else a
       
-      op = foldl (\acc s -> acc ||| prefix s ||> \_ -> val $ Op s) empty lStr where
+      op = foldl (\acc (s, f) -> acc ||| prefix s ||> \_ -> val f) empty $ zip lStr lOp where
         prefix [x]    = sym x
         prefix (x:xs) = sym x ||> \_ -> prefix xs
    
@@ -72,7 +83,21 @@ expr = logiOr
 
 instance Show E where
   show tree = "\n    " ++ printTree "    " tree ++ "\n" where
-    printTree _   (Num a) = show a
-    printTree _   (Var s) = s
-    printTree str (Op op l r) = "[" ++ op ++ "]--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
-      newStr = str ++ "|" ++ map (\_ -> ' ') [1..length op + 3]
+    printTree _ (Num a) = show a
+    printTree _ (Var s) = s
+    printTree str x = case x of
+              Mul l r -> print "*"  l r
+              Div l r -> print "/"  l r
+              Add l r -> print "+"  l r
+              Sub l r -> print "-"  l r
+              Les l r -> print "<"  l r
+              LoE l r -> print "<=" l r
+              Equ l r -> print "==" l r
+              NEq l r -> print "!=" l r
+              MoE l r -> print ">=" l r
+              Mor l r -> print ">"  l r
+              Or  l r -> print "||" l r
+              And l r -> print "&&" l r
+      where
+        print s1 l r = "[" ++ s1 ++ "]--" ++ printTree newStr r ++ "\n" ++ str ++ "|\n" ++ str ++ printTree str l where
+          newStr = str ++ "|" ++ map (\_ -> ' ') [1..length s1 + 3]
