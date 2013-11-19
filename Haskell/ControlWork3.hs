@@ -1,9 +1,9 @@
--- Задача №1
+-- Р—Р°РґР°С‡Р° в„–1
 
-type State = (Bool,Bool,Bool,Bool) -- 1 - Коза на левом берегу?
-                                   -- 2 - Капуста на левом берегу?
-                                   -- 3 - Волк на левом берегу?
-                                   -- 4 - Лодочник на левом берегу?
+type State = (Bool,Bool,Bool,Bool) -- 1 - РљРѕР·Р° РЅР° Р»РµРІРѕРј Р±РµСЂРµРіСѓ?
+                                   -- 2 - РљР°РїСѓСЃС‚Р° РЅР° Р»РµРІРѕРј Р±РµСЂРµРіСѓ?
+                                   -- 3 - Р’РѕР»Рє РЅР° Р»РµРІРѕРј Р±РµСЂРµРіСѓ?
+                                   -- 4 - Р›РѕРґРѕС‡РЅРёРє РЅР° Р»РµРІРѕРј Р±РµСЂРµРіСѓ?
 
 solutionsProblem = solPr [[(True,True,True,True)]] where
   solPr list = if isEnd curSolution then curSolution else solPr curSolution where
@@ -32,7 +32,7 @@ solutionsProblem = solPr [[(True,True,True,True)]] where
         
       notCycle (x:xs) = not $ elem x xs
      
--- Типы данных для задач 2, 3, 4
+-- РўРёРїС‹ РґР°РЅРЅС‹С… РґР»СЏ Р·Р°РґР°С‡ 2, 3, 4
 
 data Gen           = A | T | G | C deriving (Show, Eq)
 type ThreeGens     = (Gen,Gen,Gen)
@@ -40,12 +40,12 @@ type ListIntAndGen = [(ThreeGens,Integer)]
 type FunGenToList  = ThreeGens -> Maybe Integer
 type FunListToGen  = Integer -> Maybe ThreeGens
 
--- Задача №2
+-- Р—Р°РґР°С‡Р° в„–2
 
 complement = map comp where
   comp x = case x of {A -> T; T -> A; G -> C; C -> G}
 
--- Задача №3
+-- Р—Р°РґР°С‡Р° в„–3
 
 createFunGenToList :: ListIntAndGen -> FunGenToList
 createFunGenToList list = \g1 -> foldr (\(g,i) acc -> if g == g1 then Just i else acc) Nothing list
@@ -57,7 +57,7 @@ genToList fun (a:l1@(b:c:l2)) =
     _      -> genToList fun l1
 genToList _ _ = []
 
---  Задача №4
+--  Р—Р°РґР°С‡Р° в„–4
 
 createFunListToGen :: ListIntAndGen -> FunListToGen
 createFunListToGen list i1 = foldr (\(g,i) acc -> if i == i1 then Just g else acc) Nothing list
@@ -69,7 +69,7 @@ listToGen fun (x:xs) =
     _            -> listToGen fun xs
 listToGen _ _ = []
  
--- Тесты
+-- РўРµСЃС‚С‹
 
 listForFun = [((A,T,C),2),((C,T,T),5),((A,C,G),0)]
 
