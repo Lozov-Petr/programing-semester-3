@@ -4,11 +4,11 @@ data Said = L | R deriving (Show, Eq)
 type State = (Said,Said,Said,Said) -- 1 - Берег, на котором находится коза;
                                    -- 2 - берег, на котором находится капуста;
                                    -- 3 - берег, на котором находится волк;
-                                   -- 4 - берег, возде которого находится лодка.
+                                   -- 4 - берег, везде которого находится лодка.
 type Branch = [State]
 
 solutionsProblem :: [Branch]
-solutionsProblem = solPr [[(L,L,L,L)]] where
+solutionsProblem = map reverse $ solPr [[(L,L,L,L)]] where
   
   solPr :: [Branch] -> [Branch]
   solPr list = if isEnd curSolution then curSolution else solPr curSolution where
