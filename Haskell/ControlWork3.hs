@@ -5,23 +5,24 @@ type State = (Said,Said,Said,Said) -- 1 - Берег, на котором коз
                                    -- 2 - берег, на котором капуста;
                                    -- 3 - берег, на котором волк;
                                    -- 4 - берег, на котором лодка.
+type Branch = [State]
 
-solutionsProblem :: [[State]]
+solutionsProblem :: [Branch]
 solutionsProblem = solPr [[(L,L,L,L)]] where
   
-  solPr :: [[State]] -> [[State]]
+  solPr :: [Branch] -> [Branch]
   solPr list = if isEnd curSolution then curSolution else solPr curSolution where
     
-    isEnd :: [[State]] -> Bool
+    isEnd :: [Branch] -> Bool
     isEnd = foldr (\(x:_) acc -> x == (R,R,R,R) && acc) True
     
-    curSolution :: [[State]]
+    curSolution :: [Branch]
     curSolution = (filter notCycle . filter notEating . concat . map transit) list where
       
-      transit :: [State] -> [[State]]
+      transit :: Branch -> [Branch]
       transit x@(x0:_) = transit' x0 x0 where
         
-        transit' :: State -> State -> [[State]]
+        transit' :: State -> State -> [Branch]
         transit' (a,b,c,_) s =
           case s of
           (R,R,R,R) -> [x]
@@ -34,13 +35,13 @@ solutionsProblem = solPr [[(L,L,L,L)]] where
           (L,L,R,R) -> ((a,b,L,L):x) : transit' x0 (L,L,L,R)
           (L,L,L,R) -> [(a,b,c,L):x]
           
-      notEating :: [State] -> Bool
+      notEating :: Branch -> Bool
       notEating ((a,b,c,d):_)
         | a == b && b /= d = False
         | a == c && c /= d = False
         | True             = True
         
-      notCycle :: [State] -> Bool
+      notCycle :: Branch -> Bool
       notCycle (x:xs) = not $ elem x xs
      
 -- Типы данных для задач 2, 3, 4
@@ -53,7 +54,10 @@ type FunListToGen  = Integer -> Maybe ThreeGens
 
 -- Задача №2
 
+complement :: [Gen] -> [Gen]
 complement = map comp where
+  
+  comp :: Gen -> Gen
   comp x = case x of {A -> T; T -> A; G -> C; C -> G}
 
 -- Задача №3
