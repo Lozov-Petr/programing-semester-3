@@ -1,35 +1,46 @@
 -- Задача №1
 
-type State = (Bool,Bool,Bool,Bool) -- 1 - Коза на левом берегу?
-                                   -- 2 - Капуста на левом берегу?
-                                   -- 3 - Волк на левом берегу?
-                                   -- 4 - Лодочник на левом берегу?
+data Said = L | R deriving (Show, Eq)
+type State = (Said,Said,Said,Said) -- 1 - Берег, на котором коза;
+                                   -- 2 - берег, на котором капуста;
+                                   -- 3 - берег, на котором волк;
+                                   -- 4 - берег, на котором лодка.
 
-solutionsProblem = solPr [[(True,True,True,True)]] where
+solutionsProblem :: [[State]]
+solutionsProblem = solPr [[(L,L,L,L)]] where
+  
+  solPr :: [[State]] -> [[State]]
   solPr list = if isEnd curSolution then curSolution else solPr curSolution where
     
-    isEnd = foldr (\(x:_) acc -> x == (False,False,False,False) && acc) True
+    isEnd :: [[State]] -> Bool
+    isEnd = foldr (\(x:_) acc -> x == (R,R,R,R) && acc) True
     
+    curSolution :: [[State]]
     curSolution = (filter notCycle . filter notEating . concat . map transit) list where
       
+      transit :: [State] -> [[State]]
       transit x@(x0:_) = transit' x0 x0 where
+        
+        transit' :: State -> State -> [[State]]
         transit' (a,b,c,_) s =
           case s of
-          (False,False,False,False) -> [x]
-          (True ,_    ,_    ,True ) -> ((False,b,c,False):x) : transit' x0 (False,b    ,c    ,True)
-          (False,True ,_    ,True ) -> ((a,False,c,False):x) : transit' x0 (False,False,c    ,True)
-          (False,False,True ,True ) -> ((a,b,False,False):x) : transit' x0 (False,False,False,True)
-          (False,False,False,True ) -> [(a,b,c,False): x]
-          (False,_    ,_    ,False) -> ((True,b,c,True):x) : transit' x0 (True,b   ,c   ,False)
-          (True ,False,_    ,False) -> ((a,True,c,True):x) : transit' x0 (True,True,c   ,False)
-          (True ,True ,False,False) -> ((a,b,True,True):x) : transit' x0 (True,True,True,False)
-          (True ,True ,True ,False) -> [(a,b,c,True) : x]
+          (R,R,R,R) -> [x]
+          (L,_,_,L) -> ((R,b,c,R):x) : transit' x0 (R,b,c,L)
+          (R,L,_,L) -> ((a,R,c,R):x) : transit' x0 (R,R,c,L)
+          (R,R,L,L) -> ((a,b,R,R):x) : transit' x0 (R,R,R,L)
+          (R,R,R,L) -> [(a,b,c,R):x]
+          (R,_,_,R) -> ((L,b,c,L):x) : transit' x0 (L,b,c,R)
+          (L,R,_,R) -> ((a,L,c,L):x) : transit' x0 (L,L,c,R)
+          (L,L,R,R) -> ((a,b,L,L):x) : transit' x0 (L,L,L,R)
+          (L,L,L,R) -> [(a,b,c,L):x]
           
+      notEating :: [State] -> Bool
       notEating ((a,b,c,d):_)
         | a == b && b /= d = False
         | a == c && c /= d = False
         | True             = True
         
+      notCycle :: [State] -> Bool
       notCycle (x:xs) = not $ elem x xs
      
 -- Типы данных для задач 2, 3, 4
