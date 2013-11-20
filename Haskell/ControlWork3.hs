@@ -62,31 +62,31 @@ complement = map comp where
 
 -- Задача №3
 
-createFunGenToList :: ListThreeGensAndInt -> FunGenToInt
-createFunGenToList list = \g1 -> foldr (\(g,i) acc -> if g == g1 then Just i else acc) Nothing list
+createFunGenToInt :: ListThreeGensAndInt -> FunGenToInt
+createFunGenToInt list = \g1 -> foldr (\(g,i) acc -> if g == g1 then Just i else acc) Nothing list
 
-genToList :: FunGenToInt -> [Gen] -> [Integer]
-genToList fun (a:l1@(b:c:l2)) =
+genToInt :: FunGenToInt -> [Gen] -> [Integer]
+genToInt fun (a:l1@(b:c:l2)) =
   case fun (a,b,c) of
-    Just s -> s : genToList fun l2
-    _      -> genToList fun l1
-genToList _ _ = []
+    Just s -> s : genToInt fun l2
+    _      -> genToInt fun l1
+genToInt _ _ = []
 
 --  Задача №4
 
-createFunListToGen :: ListThreeGensAndInt -> FunIntToGen
-createFunListToGen list i1 = foldr (\(g,i) acc -> if i == i1 then Just g else acc) Nothing list
+createFunIntToGen :: ListThreeGensAndInt -> FunIntToGen
+createFunIntToGen list i1 = foldr (\(g,i) acc -> if i == i1 then Just g else acc) Nothing list
 
-listToGen :: FunIntToGen -> [Integer] -> [Gen]
-listToGen fun (x:xs) =
+intToGen :: FunIntToGen -> [Integer] -> [Gen]
+intToGen fun (x:xs) =
   case fun x of
-    Just (a,b,c) -> a : b : c : listToGen fun xs
-    _            -> listToGen fun xs
-listToGen _ _ = []
+    Just (a,b,c) -> a : b : c : intToGen fun xs
+    _            -> intToGen fun xs
+intToGen _ _ = []
  
 -- Тесты
 
-listForFun = [((A,T,C),2),((C,T,T),5),((A,C,G),0)]
+listForFuns = [((A,T,C),2),((C,T,T),5),((A,C,G),0)]
 
 testGen  = [A,T,C,C,T,T,G,G,G,G,G,A,C,G,G,G,G,G,G,G,G,G,A,T,C,G]
 ------------__2__|__5__|_________|__0__|_______________|__2__|_
@@ -94,9 +94,9 @@ testGen  = [A,T,C,C,T,T,G,G,G,G,G,A,C,G,G,G,G,G,G,G,G,G,A,T,C,G]
 testList = [  2,  5,  7,  0,  2]
 ------------ATC|CTT|___|ACG|ATC
 
-fun1 = createFunGenToList listForFun
-fun2 = createFunListToGen listForFun
+fun1 = createFunGenToInt listForFuns
+fun2 = createFunIntToGen listForFuns
 
 res1 = complement testGen
-res2 = genToList fun1 testGen
-res3 = listToGen fun2 testList
+res2 = genToInt fun1 testGen
+res3 = intToGen fun2 testList
