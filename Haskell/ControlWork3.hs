@@ -1,10 +1,10 @@
 -- Задача №1
 
 data Said = L | R deriving (Show, Eq)
-type State = (Said,Said,Said,Said) -- 1 - Берег, на котором коза;
-                                   -- 2 - берег, на котором капуста;
-                                   -- 3 - берег, на котором волк;
-                                   -- 4 - берег, на котором лодка.
+type State = (Said,Said,Said,Said) -- 1 - Берег, на котором находится коза;
+                                   -- 2 - берег, на котором находится капуста;
+                                   -- 3 - берег, на котором находится волк;
+                                   -- 4 - берег, возде которого находится лодка.
 type Branch = [State]
 
 solutionsProblem :: [Branch]
@@ -46,11 +46,11 @@ solutionsProblem = solPr [[(L,L,L,L)]] where
      
 -- Типы данных для задач 2, 3, 4
 
-data Gen           = A | T | G | C deriving (Show, Eq)
-type ThreeGens     = (Gen,Gen,Gen)
-type ListIntAndGen = [(ThreeGens,Integer)]
-type FunGenToList  = ThreeGens -> Maybe Integer
-type FunListToGen  = Integer -> Maybe ThreeGens
+data Gen                 = A | T | G | C deriving (Show, Eq)
+type ThreeGens           = (Gen,Gen,Gen)
+type ListThreeGensAndInt = [(ThreeGens,Integer)]
+type FunGenToInt         = ThreeGens -> Maybe Integer
+type FunIntToGen         = Integer -> Maybe ThreeGens
 
 -- Задача №2
 
@@ -62,10 +62,10 @@ complement = map comp where
 
 -- Задача №3
 
-createFunGenToList :: ListIntAndGen -> FunGenToList
+createFunGenToList :: ListThreeGensAndInt -> FunGenToInt
 createFunGenToList list = \g1 -> foldr (\(g,i) acc -> if g == g1 then Just i else acc) Nothing list
 
-genToList :: FunGenToList -> [Gen] -> [Integer]
+genToList :: FunGenToInt -> [Gen] -> [Integer]
 genToList fun (a:l1@(b:c:l2)) =
   case fun (a,b,c) of
     Just s -> s : genToList fun l2
@@ -74,10 +74,10 @@ genToList _ _ = []
 
 --  Задача №4
 
-createFunListToGen :: ListIntAndGen -> FunListToGen
+createFunListToGen :: ListThreeGensAndInt -> FunIntToGen
 createFunListToGen list i1 = foldr (\(g,i) acc -> if i == i1 then Just g else acc) Nothing list
 
-listToGen :: FunListToGen -> [Integer] -> [Gen]
+listToGen :: FunIntToGen -> [Integer] -> [Gen]
 listToGen fun (x:xs) =
   case fun x of
     Just (a,b,c) -> a : b : c : listToGen fun xs
