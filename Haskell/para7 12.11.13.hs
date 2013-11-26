@@ -57,14 +57,15 @@ ident   = letter ||> (\a -> many (letter ||| digit) ||> \b -> val $ Var (a:b))
 primary = ident ||| literal
   	              ||| sym '(' ||> (\_ -> expr ||> (\a -> sym ')' ||> \_ -> val a))
 	  
-multi   = allOptExpr primary      multi   ["*","/"]                     [Mul,Div]	               LeftAssoc 
+multi   = allOptExpr primary      multi   ["*","/"]                     [Mul,Div]	          LeftAssoc 
 addi    = allOptExpr (multi id)   addi    ["+","-"]                     [Add,Sub]                 LeftAssoc 
 reli    = allOptExpr (addi id)    addi    ["<","<=","==","!=",">=",">"] [Les,LoE,Equ,NEq,MoE,Mor] NotAssoc 
 logiAnd = allOptExpr (reli id)    logiAnd ["&&"]                        [And]                     RightAssoc
 logiOr  = allOptExpr (logiAnd id) logiOr  ["||"]                        [Or]                      RightAssoc
  
 allOptExpr :: Parser E -> ((E -> E) -> Parser E) -> [String] -> [E -> E -> E] -> Assoc -> (E -> E) -> Parser E
-allOptExpr par1 par2 lStr lOp assoc hole = par1 ||> (\a -> op ||> (\o -> val (newHole assoc hole a o) ||> par2)) ||| par1 ||> (val . hole)  where 
+allOptExpr par1 par2 lStr lOp assoc hole = par1 ||> (\a -> op ||> (\o -> val (newHole assoc hole a o) ||> par2)) 
+                                                ||| par1 ||> (val . hole)  where 
   op = foldl (\acc (s, f) -> acc ||| prefix s ||> \_ -> val f) empty $ zip lStr lOp where
 	  prefix [x]    = sym x
 	  prefix (x:xs) = sym x ||> \_ -> prefix xs
