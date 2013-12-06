@@ -11,7 +11,7 @@ echo      ///////////////////\\\\\\\\\\\\\\\\\\\
 echo      /                                    \ 
 echo      /        Builder for Geometry        \ 
 echo      /            Peter Lozov             \ 
-echo      /              02.12.12              \ 
+echo      /              06.12.12              \ 
 echo      /                                    \ 
 echo      \\\\\\\\\\\\\\\\\\\/////////////////// 
 echo.

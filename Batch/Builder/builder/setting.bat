@@ -1,46 +1,46 @@
-@echo off
+п»ї@echo off
 if "%BuilderStart%"=="" goto :EOF
 
-:: Работа с PATH
+:: Р Р°Р±РѕС‚Р° СЃ PATH
 set PathGit="C:\Program Files\Git\bin"
 set PathMSBuild="C:\Windows\Microsoft.NET\Framework\v4.0.30319"
 set PathBlat="C:\Program Files\Blat\full"
 set PATH=%PATH%;%PathGit%;%PathMSBuild%;%PathBlat%
 
-:: Названия из репозитория
+:: РќР°Р·РІР°РЅРёСЏ РёР· СЂРµРїРѕР·РёС‚РѕСЂРёСЏ
 set nameRepo=Geometry
 set solutionName=IntersectCircles
 
-:: Адрес репозитория
+:: РђРґСЂРµСЃ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ
 set gitURL=http://github.com/Lozov-Petr/%nameRepo%
 
-:: Адреса в репозитории
+:: РђРґСЂРµСЃР° РІ СЂРµРїРѕР·РёС‚РѕСЂРёРё
 set buildFolder=%nameRepo%\%solutionName%\bin\Debug
 set solution=%nameRepo%\%solutionName%.sln
 
-:: Кодовые страницы
+:: РљРѕРґРѕРІС‹Рµ СЃС‚СЂР°РЅРёС†С‹
 set standartCodepage=866
 set cyrillicCodepage=1251
 chcp %standartCodepage% > nul
 
-:: Список файлов, которые нужно проверить
+:: РЎРїРёСЃРѕРє С„Р°Р№Р»РѕРІ, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ
 set fileList=%folder%\fileList.txt
 
-:: Логи
+:: Р›РѕРіРё
 set RepoCloneErrors=RepoCloneErrors.log
 set logMSBuild=logMSBuild.log
 set SendingErrors=SendingErrors.log
 
-:: Информация о появлении ошибок
+:: РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРѕСЏРІР»РµРЅРёРё РѕС€РёР±РѕРє
 set errorInCloning=false
 set errorInBuild=false
 set errorChecking=false
 set errorInSending=false
 
-:: Не нейденный файл в сборке
+:: РќРµ РЅРµР№РґРµРЅРЅС‹Р№ С„Р°Р№Р» РІ СЃР±РѕСЂРєРµ
 set FileNotFound=
 
-:: Информация для blat
+:: РРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ blat
 set emailBody=Successful build the solution.
 set emailFail=%logMSBuild%
 set emailSubject=Auto-building solution: %solutionName%
