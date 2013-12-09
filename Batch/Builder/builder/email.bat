@@ -7,7 +7,7 @@ echo.
 if %errorInCloning%==true (
   set emailBody=An error occurred when cloning repository.
   set emailSubject=%emailSubject% [Error in cloning repo]
-  set emailFail=%RepoCloneErrors%
+  set emailFile=%RepoCloneErrors%
  )
  
 if %errorInBuild%==true (
@@ -20,7 +20,7 @@ if %errorChecking%==true (
   set emailSubject=%emailSubject% [File not found]
  )  
 
-blat -subject "%emailSubject%" -body "%emailBody%" -tf %emailList% -attach %emailFail% >nul 2>%SendingErrors%
+blat -subject "%emailSubject%" -body "%emailBody%" -tf %emailList% -attach %emailFile% >nul 2>%SendingErrors%
 
 if errorlevel 1 goto :error
 

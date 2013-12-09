@@ -37,11 +37,11 @@ set errorInBuild=false
 set errorChecking=false
 set errorInSending=false
 
-:: Не нейденный файл в сборке
+:: Не найденный файл в сборке
 set FileNotFound=
 
 :: Информация для blat
 set emailBody=Successful build the solution.
-set emailFail=%logMSBuild%
+set emailFile=%logMSBuild%
 set emailSubject=Auto-building solution: %solutionName%
 set emailList=%folder%\emailList.txt
