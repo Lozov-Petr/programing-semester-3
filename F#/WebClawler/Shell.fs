@@ -14,13 +14,13 @@ type ShellForWebCrawler() as this =
                 )
 
     let infoInput = new Label(
-                            Left      = 100,
-                            Top       = 5,
-                            Width     = 200,
-                            Text      = "Введите URI:",
-                            TextAlign = ContentAlignment.MiddleCenter
+                                Left      = 100,
+                                Top       = 5,
+                                Width     = 200,
+                                Text      = "Введите URI:",
+                                TextAlign = ContentAlignment.MiddleCenter
                             
-                        )
+                             )
     
     let input = new TextBox(
                                 Left  = 50,
