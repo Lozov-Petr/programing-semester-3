@@ -13,13 +13,11 @@ type WebCrawler() =
     let downloadedPictures = new ConcurrentDictionary<string, unit>()
                 
     static let extensions = "\.(:?ico|bmp|jpeg|jpg|png|gif)"
-    static let name       = sprintf "[a-zA-Z0-9._-]+%s" extensions
     static let regUri     = "(:?https?\:)?[a-zA-Z0-9./_-]+"
     static let regPic     = sprintf "(:?(:?href=\")?(?<pic>%s%s))" regUri extensions
     static let regLink    = sprintf "(:?href=\"(?<link>%s)\")" regUri
     static let regAll     = sprintf "%s|%s" regPic regLink
     static let regex      = new Regex(regAll)
-    static let regexName  = new Regex(name)
 
     member private x.GetHTML(link : string) = 
         async {
@@ -44,7 +42,6 @@ type WebCrawler() =
                 try if not <| downloadedPictures.ContainsKey(link) then
                         let uri = new Uri(link)
                         downloadedPictures.GetOrAdd(link, ())
-                        let name = regexName.Match(uri.OriginalString).Value
                         (new WebClient()).DownloadFileAsync(uri, sprintf "Picture/%s" <| createName link)
                 with _ -> ()
               }
