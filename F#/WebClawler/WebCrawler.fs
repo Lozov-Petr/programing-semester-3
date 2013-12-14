@@ -71,12 +71,13 @@ type WebCrawler() =
               }
 
     member x.Crawle(link : string) =
+        try let uri = new Uri(link)  
+            attendedLinks.Clear()
+            downloadedPictures.Clear()
+            Directory.CreateDirectory("Picture") |> ignore
+            let host = sprintf "%s://%s" uri.Scheme uri.Host
 
-        attendedLinks.Clear()
-        downloadedPictures.Clear()
-        Directory.CreateDirectory("Picture") |> ignore
-        let uri = new Uri(link)  
-        let host = sprintf "%s://%s" uri.Scheme uri.Host
-
-        x.PrivateCrawle host link
-        |> Async.RunSynchronously
+            x.PrivateCrawle host link
+            |> Async.RunSynchronously
+        
+        with _ -> ()

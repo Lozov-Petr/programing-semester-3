@@ -39,6 +39,14 @@ type ShellForWebCrawler() as this =
     let webCrawler = new WebCrawler()
 
     do  this.Controls.AddRange([|input; infoInput; start|])
-        start.Click.Add(fun _ -> webCrawler.Crawle(input.Text))
+        start.Click.Add(fun _ -> 
+                            input.Enabled <- false
+                            start.Enabled <- false
+                            start.Text <- "Ждите"
+                            webCrawler.Crawle(input.Text)
+                            input.Enabled <- true
+                            start.Enabled <- true
+                            start.Text <- "Запуск"
+                       )
         
 do Application.Run(new ShellForWebCrawler())
