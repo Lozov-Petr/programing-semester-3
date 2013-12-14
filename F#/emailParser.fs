@@ -1,7 +1,7 @@
 ﻿(******************************
            Лозов Пётр
            Группа 271
-            08.11.13
+            14.12.13
         Парсер e-mail'ов
    [+ модульное тестирование]
  *******************************)
@@ -10,11 +10,11 @@ open System.Text.RegularExpressions
 open NUnit.Framework
 open FsUnit
 
-let isProperlyEmail str =
-    let strDomens = "(aero|asia|coop|info|jobs|mobi|museum|name|travel|[a-z]{2,3})"
-    let sample = "[a-zA-Z_][a-zA-Z0-9_-]*(\.?[a-zA-Z_0-9]+)*@([a-z]+\.)+" + strDomens
-    ((new Regex("^" + sample  + "$")).Match str).Success
+let strDomens = "(aero|asia|coop|info|jobs|mobi|museum|name|travel|[a-z]{2,3})"
+let sample = "[a-zA-Z_][a-zA-Z0-9_-]*(\.?[a-zA-Z_0-9]+)*@([a-z]+\.)+" + strDomens
+let regex = new Regex("^" + sample  + "$"
 
+let isProperlyEmail str = regex.Match(str).Success
 
 [<TestFixture>]
 type MailTest() = 
