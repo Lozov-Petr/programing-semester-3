@@ -12,7 +12,7 @@ open FsUnit
 
 let strDomens = "(aero|asia|coop|info|jobs|mobi|museum|name|travel|[a-z]{2,3})"
 let sample = "[a-zA-Z_][a-zA-Z0-9_-]*(\.?[a-zA-Z_0-9]+)*@([a-z]+\.)+" + strDomens
-let regex = new Regex("^" + sample  + "$"
+let regex = new Regex("^" + sample  + "$")
 
 let isProperlyEmail str = regex.Match(str).Success
 
