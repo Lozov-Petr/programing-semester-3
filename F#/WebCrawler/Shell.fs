@@ -1,4 +1,11 @@
-﻿module Shell
+﻿(******************************
+           Лозов Пётр
+           Группа 271
+            25.12.13
+        WebCrawler (Окно)
+ *******************************)
+
+module Shell
 
 open WebCrawler
 open System.Windows.Forms
@@ -19,7 +26,6 @@ type ShellForWebCrawler() as this =
                                 Width     = 200,
                                 Text      = "Введите URI:",
                                 TextAlign = ContentAlignment.MiddleCenter
-                            
                              )
     
     let input = new TextBox(

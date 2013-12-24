@@ -1,4 +1,11 @@
-﻿module WebCrawler
+﻿(******************************
+           Лозов Пётр
+           Группа 271
+            25.12.13
+       WebCrawler (Класс)
+ *******************************)
+
+module WebCrawler
 
 open System
 open System.IO
