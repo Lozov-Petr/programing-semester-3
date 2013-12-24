@@ -1,6 +1,5 @@
 ﻿module WebCrawler
 
-open Microsoft.FSharp.Control.WebExtensions
 open System
 open System.IO
 open System.Net
@@ -9,6 +8,10 @@ open System.Text.RegularExpressions
 
 type WebCrawler() =
     
+    let folder = "Picture"
+    
+    do folder |> Directory.CreateDirectory |> ignore
+
     let attendedLinks = new ConcurrentDictionary<string, unit>()
     let downloadedPictures = new ConcurrentDictionary<string, unit>()
                 
@@ -42,7 +45,8 @@ type WebCrawler() =
                 try if not <| downloadedPictures.ContainsKey(link) then
                         let uri = new Uri(link)
                         downloadedPictures.GetOrAdd(link, ())
-                        (new WebClient()).DownloadFileAsync(uri, sprintf "Picture/%s" <| createName link)
+                        let wc = new WebClient() 
+                        wc.DownloadFile(uri, sprintf "%s/%s" folder <| createName link)
                 with _ -> ()
               }
 
@@ -71,9 +75,7 @@ type WebCrawler() =
         try let uri = new Uri(link)  
             attendedLinks.Clear()
             downloadedPictures.Clear()
-            Directory.CreateDirectory("Picture") |> ignore
             let host = sprintf "%s://%s" uri.Scheme uri.Host
-
             x.PrivateCrawle host link
             |> Async.RunSynchronously
         
